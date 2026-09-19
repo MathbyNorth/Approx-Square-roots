@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Approximate Square Root Challenge</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#f4f7fc;
+    text-align:center;
+    margin:20px;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 0 12px rgba(0,0,0,0.2);
+}
+
+button{
+    padding:12px 20px;
+    margin:5px;
+    font-size:16px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.menuBtn{
+    background:#4caf50;
+    color:white;
+}
+
+.submitBtn{
+    background:#2196f3;
+    color:white;
+}
+
+.hintBtn{
+    background:#ff9800;
+    color:white;
+}
+
+.nextBtn{
+    background:#9c27b0;
+    color:white;
+}
+
+#question{
+    font-size:32px;
+    margin:20px;
+    font-weight:bold;
+}
+
+#feedback{
+    margin-top:15px;
+    font-size:18px;
+}
+
+.numberline{
+    font-family:monospace;
+    white-space:pre;
+    margin:15px;
+    font-size:16px;
+}
+
+.hidden{
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎯 Approximate Square Root Challenge</h1>
+
+<div id="menu">
+
+<h2>Main Menu</h2>
+
+<button class="menuBtn" onclick="startPractice()">⭐ Practice Mode</button>
+
+<button class="menuBtn" onclick="startLevel1()">🟢 Level 1</button>
+
+<p>Whole Numbers 1-400<br>
+Estimate to the nearest tenth.</p>
+
+</div>
+
+<div id="gameArea" class="hidden">
+
+<h2 id="modeTitle"></h2>
+
+<p>Score: <span id="score">0</span></p>
+
+<p>Question <span id="currentQ">1</span> of <span id="totalQ">10</span></p>
+
+<div id="question"></div>
+
+<input type="number" step="0.1" id="answer">
+
+<br><br>
+
+<button class="submitBtn" onclick="checkAnswer()">Submit</button>
+
+<button class="hintBtn" onclick="showHint()">Hint</button>
+
+<button class="hintBtn" onclick="showSolution()">Solution</button>
+
+<button class="nextBtn" onclick="nextQuestion()">Next Question</button>
+
+<div id="feedback"></div>
+
+</div>
+
+</div>
+
+<script>
+
+let practiceMode=false;
+let totalQuestions=10;
+let currentQuestion=1;
+let score=0;
+
+let targetNumber;
+let correctAnswer;
+
+let lowerSquare;
+let upperSquare;
+
+function startPractice(){
+
+practiceMode=true;
+
+document.getElementById("menu").classList.add("hidden");
+document.getElementById("gameArea").classList.remove("hidden");
+
+document.getElementById("modeTitle").innerHTML=
+"⭐ Practice Mode";
+
+generateQuestion();
+}
+
+function startLevel1(){
+
+practiceMode=false;
+
+document.getElementById("menu").classList.add("hidden");
+document.getElementById("gameArea").classList.remove("hidden");
+
+document.getElementById("modeTitle").innerHTML=
+"🟢 Level 1: Whole Numbers";
+
+score=0;
+currentQuestion=1;
+
+document.getElementById("score").innerHTML=score;
+
+generateQuestion();
+}
+
+function isPerfectSquare(n){
+return Number.isInteger(Math.sqrt(n));
+}
+
+function generateQuestion(){
+
+do{
+targetNumber=Math.floor(Math.random()*399)+2;
+}
+while(isPerfectSquare(targetNumber));
+
+lowerSquare=Math.floor(Math.sqrt(targetNumber));
+upperSquare=lowerSquare+1;
+
+correctAnswer=Math.sqrt(targetNumber);
+
+document.getElementById("question").innerHTML=
+"√"+targetNumber;
+
+document.getElementById("answer").value="";
+document.getElementById("feedback").innerHTML="";
+
+document.getElementById("currentQ").innerHTML=currentQuestion;
+document.getElementById("totalQ").innerHTML=totalQuestions;
+}
+
+function checkAnswer(){
+
+let studentAnswer=
+parseFloat(document.getElementById("answer").value);
+
+if(isNaN(studentAnswer)){
+alert("Enter an answer.");
+return;
+}
+
+let roundedCorrect=
+Math.round(correctAnswer*10)/10;
+
+let roundedStudent=
+Math.round(studentAnswer*10)/10;
+
+if(roundedStudent===roundedCorrect){
+
+document.getElementById("feedback").innerHTML=
+"✅ Correct!";
+
+if(!practiceMode){
+
+score+=10;
+
+document.getElementById("score").innerHTML=score;
+}
+
+}
+else{
+
+document.getElementById("feedback").innerHTML=
+"❌ Not quite. Click Solution.";
+}
+}
+
+function showHint(){
+
+let feedback=`
+
+<h3>💡 Hint</h3>
+
+<p>Find the nearest perfect squares.</p>
+
+<p>
+${lowerSquare*lowerSquare}
+=
+(${lowerSquare})²
+</p>
+
+<p>
+${upperSquare*upperSquare}
+=
+(${upperSquare})²
+</p>
+
+`;
+
+document.getElementById("feedback").innerHTML=
+feedback;
+}
+
+function showSolution(){
+
+let position=
+(targetNumber-lowerSquare*lowerSquare)/
+((upperSquare*upperSquare)-(lowerSquare*lowerSquare));
+
+let linePosition=Math.round(position*30);
+
+let line="";
+
+for(let i=0;i<31;i++){
+
+if(i===linePosition){
+
+line+="●";
+
+}else{
+
+line+="-";
+}
+
+}
+
+let solution=`
+
+<h3>✅ Step-by-Step Solution</h3>
+
+<p><b>Step 1</b></p>
+
+<p>
+
+${lowerSquare*lowerSquare}
+&lt;
+${targetNumber}
+&lt;
+${upperSquare*upperSquare}
+
+</p>
+
+<p><b>Step 2</b></p>
+
+<p>
+
+√${lowerSquare*lowerSquare}
+=
+${lowerSquare}
+
+</p>
+
+<p>
+
+√${upperSquare*upperSquare}
+=
+${upperSquare}
+
+</p>
+
+<p><b>Step 3</b></p>
+
+<div class="numberline">
+
+${lowerSquare}
+${line}
+${upperSquare}
+
+</div>
+
+<p><b>Step 4</b></p>
+
+<p>
+
+${targetNumber} is between
+${lowerSquare*lowerSquare}
+and
+${upperSquare*upperSquare}
+
+</p>
+
+<p><b>Step 5</b></p>
+
+<p>
+
+√${targetNumber}
+≈
+${correctAnswer.toFixed(2)}
+
+</p>
+
+<p><b>Step 6</b></p>
+
+<p>
+
+Nearest tenth:
+
+<b>${(Math.round(correctAnswer*10)/10).toFixed(1)}</b>
+
+</p>
+
+`;
+
+document.getElementById("feedback").innerHTML=
+solution;
+}
+
+function nextQuestion(){
+
+if(!practiceMode){
+
+currentQuestion++;
+
+if(currentQuestion>totalQuestions){
+
+document.getElementById("feedback").innerHTML=
+
+`<h2>🏆 Game Complete!</h2>
+<p>Final Score: ${score}</p>`;
+
+return;
+}
+
+}
+
+generateQuestion();
+}
+
+</script>
+
+</body>
+</html>
