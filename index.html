@@ -3,78 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Approximate Square Root Challenge</title>
 
 <style>
+
 body{
-    font-family:Arial,sans-serif;
-    background:#f4f7fc;
-    text-align:center;
-    margin:20px;
+font-family:Arial, sans-serif;
+background:#eef2f7;
+text-align:center;
+padding:20px;
 }
 
 .container{
-    max-width:900px;
-    margin:auto;
-    background:white;
-    padding:20px;
-    border-radius:15px;
-    box-shadow:0 0 12px rgba(0,0,0,0.2);
+max-width:900px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 0 15px rgba(0,0,0,.2);
 }
 
 button{
-    padding:12px 20px;
-    margin:5px;
-    font-size:16px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
+padding:12px 20px;
+margin:5px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-size:16px;
 }
 
-.menuBtn{
-    background:#4caf50;
-    color:white;
+.green{
+background:#4CAF50;
+color:white;
 }
 
-.submitBtn{
-    background:#2196f3;
-    color:white;
+.blue{
+background:#2196F3;
+color:white;
 }
 
-.hintBtn{
-    background:#ff9800;
-    color:white;
+.orange{
+background:#FF9800;
+color:white;
 }
 
-.nextBtn{
-    background:#9c27b0;
-    color:white;
-}
-
-#question{
-    font-size:32px;
-    margin:20px;
-    font-weight:bold;
-}
-
-#feedback{
-    margin-top:15px;
-    font-size:18px;
-}
-
-.numberline{
-    font-family:monospace;
-    white-space:pre;
-    margin:15px;
-    font-size:16px;
+.purple{
+background:#9C27B0;
+color:white;
 }
 
 .hidden{
-    display:none;
+display:none;
 }
-</style>
-</head>
 
+#question{
+font-size:36px;
+margin:20px;
+font-weight:bold;
+}
+
+#feedback{
+margin-top:20px;
+text-align:left;
+padding:15px;
+background:#f8f8f8;
+border-radius:10px;
+}
+
+.numberline{
+font-family:monospace;
+white-space:pre;
+font-size:18px;
+}
+
+</style>
+
+</head>
 <body>
 
 <div class="container">
@@ -85,36 +90,60 @@ button{
 
 <h2>Main Menu</h2>
 
-<button class="menuBtn" onclick="startPractice()">⭐ Practice Mode</button>
+<button class="green" onclick="startPractice()">
+⭐ Practice Mode
+</button>
 
-<button class="menuBtn" onclick="startLevel1()">🟢 Level 1</button>
+<button class="green" onclick="startGame()">
+🟢 Level 1 (1-400)
+</button>
 
-<p>Whole Numbers 1-400<br>
-Estimate to the nearest tenth.</p>
+<p>
+Estimate square roots to the nearest tenth.<br>
+Answers within ±0.1 are accepted.
+</p>
 
 </div>
 
-<div id="gameArea" class="hidden">
+<div id="game" class="hidden">
 
-<h2 id="modeTitle"></h2>
+<h2 id="mode"></h2>
 
-<p>Score: <span id="score">0</span></p>
+<p>
+Score:
+<span id="score">0</span>
+</p>
 
-<p>Question <span id="currentQ">1</span> of <span id="totalQ">10</span></p>
+<p>
+Question
+<span id="current">1</span>
+of
+<span id="total">10</span>
+</p>
 
 <div id="question"></div>
 
-<input type="number" step="0.1" id="answer">
+<input id="answer"
+type="number"
+step="0.1">
 
 <br><br>
 
-<button class="submitBtn" onclick="checkAnswer()">Submit</button>
+<button class="blue" onclick="checkAnswer()">
+Submit
+</button>
 
-<button class="hintBtn" onclick="showHint()">Hint</button>
+<button class="orange" onclick="showHint()">
+Hint
+</button>
 
-<button class="hintBtn" onclick="showSolution()">Solution</button>
+<button class="orange" onclick="showSolution()">
+Solution
+</button>
 
-<button class="nextBtn" onclick="nextQuestion()">Next Question</button>
+<button class="purple" onclick="nextQuestion()">
+Next Question
+</button>
 
 <div id="feedback"></div>
 
@@ -124,259 +153,320 @@ Estimate to the nearest tenth.</p>
 
 <script>
 
-let practiceMode=false;
-let totalQuestions=10;
-let currentQuestion=1;
+let practice=false;
 let score=0;
+let currentQuestion=1;
+let totalQuestions=10;
 
-let targetNumber;
-let correctAnswer;
-
-let lowerSquare;
-let upperSquare;
+let target;
+let root;
+let lowerRoot;
+let upperRoot;
 
 function startPractice(){
 
-practiceMode=true;
+practice=true;
 
 document.getElementById("menu").classList.add("hidden");
-document.getElementById("gameArea").classList.remove("hidden");
+document.getElementById("game").classList.remove("hidden");
 
-document.getElementById("modeTitle").innerHTML=
+document.getElementById("mode").innerHTML=
 "⭐ Practice Mode";
 
 generateQuestion();
+
 }
 
-function startLevel1(){
+function startGame(){
 
-practiceMode=false;
-
-document.getElementById("menu").classList.add("hidden");
-document.getElementById("gameArea").classList.remove("hidden");
-
-document.getElementById("modeTitle").innerHTML=
-"🟢 Level 1: Whole Numbers";
+practice=false;
 
 score=0;
 currentQuestion=1;
 
 document.getElementById("score").innerHTML=score;
 
+document.getElementById("menu").classList.add("hidden");
+document.getElementById("game").classList.remove("hidden");
+
+document.getElementById("mode").innerHTML=
+"🟢 Level 1";
+
 generateQuestion();
+
 }
 
 function isPerfectSquare(n){
+
 return Number.isInteger(Math.sqrt(n));
+
 }
 
 function generateQuestion(){
 
 do{
-targetNumber=Math.floor(Math.random()*399)+2;
+
+target=Math.floor(Math.random()*399)+2;
+
 }
-while(isPerfectSquare(targetNumber));
+while(isPerfectSquare(target));
 
-lowerSquare=Math.floor(Math.sqrt(targetNumber));
-upperSquare=lowerSquare+1;
+root=Math.sqrt(target);
 
-correctAnswer=Math.sqrt(targetNumber);
+lowerRoot=Math.floor(root);
+upperRoot=lowerRoot+1;
 
 document.getElementById("question").innerHTML=
-"√"+targetNumber;
+"√" + target;
 
 document.getElementById("answer").value="";
+
 document.getElementById("feedback").innerHTML="";
 
-document.getElementById("currentQ").innerHTML=currentQuestion;
-document.getElementById("totalQ").innerHTML=totalQuestions;
+document.getElementById("current").innerHTML=currentQuestion;
+
 }
 
 function checkAnswer(){
 
-let studentAnswer=
+let student=
 parseFloat(document.getElementById("answer").value);
 
-if(isNaN(studentAnswer)){
+if(isNaN(student)){
+
 alert("Enter an answer.");
+
 return;
+
 }
 
-let roundedCorrect=
-Math.round(correctAnswer*10)/10;
+let targetEstimate=
+Math.round(root*10)/10;
 
-let roundedStudent=
-Math.round(studentAnswer*10)/10;
+let low=
+targetEstimate-0.1;
 
-if(roundedStudent===roundedCorrect){
+let high=
+targetEstimate+0.1;
+
+if(student>=low && student<=high){
 
 document.getElementById("feedback").innerHTML=
-"✅ Correct!";
+`
+<h3>✅ Correct!</h3>
 
-if(!practiceMode){
+<p>
+Accepted Range:
+<b>${low.toFixed(1)}</b>
+to
+<b>${high.toFixed(1)}</b>
+</p>
+
+<p>
+Target Estimate:
+<b>${targetEstimate.toFixed(1)}</b>
+</p>
+`;
+
+if(!practice){
 
 score+=10;
 
 document.getElementById("score").innerHTML=score;
+
 }
 
 }
 else{
 
 document.getElementById("feedback").innerHTML=
-"❌ Not quite. Click Solution.";
+`
+<h3>❌ Not Quite</h3>
+
+<p>
+Accepted Range:
+<b>${low.toFixed(1)}</b>
+to
+<b>${high.toFixed(1)}</b>
+</p>
+
+<p>
+Click Solution for a full walkthrough.
+</p>
+`;
+
 }
+
 }
 
 function showHint(){
 
-let feedback=`
-
+document.getElementById("feedback").innerHTML=
+`
 <h3>💡 Hint</h3>
 
-<p>Find the nearest perfect squares.</p>
+<p>Find the benchmark perfect squares:</p>
 
 <p>
-${lowerSquare*lowerSquare}
+${lowerRoot*lowerRoot}
 =
-(${lowerSquare})²
+(${lowerRoot})²
 </p>
 
 <p>
-${upperSquare*upperSquare}
+${upperRoot*upperRoot}
 =
-(${upperSquare})²
+(${upperRoot})²
 </p>
 
+<p>
+The answer must be between
+${lowerRoot}
+and
+${upperRoot}.
+</p>
 `;
 
-document.getElementById("feedback").innerHTML=
-feedback;
 }
 
 function showSolution(){
 
-let position=
-(targetNumber-lowerSquare*lowerSquare)/
-((upperSquare*upperSquare)-(lowerSquare*lowerSquare));
+let lowerSquare=
+lowerRoot*lowerRoot;
 
-let linePosition=Math.round(position*30);
+let upperSquare=
+upperRoot*upperRoot;
+
+let position=
+(target-lowerSquare)/(upperSquare-lowerSquare);
+
+let dots=Math.round(position*30);
 
 let line="";
 
 for(let i=0;i<31;i++){
 
-if(i===linePosition){
+if(i===dots){
 
 line+="●";
 
 }else{
 
 line+="-";
-}
 
 }
 
-let solution=`
+}
 
+document.getElementById("feedback").innerHTML=
+`
 <h3>✅ Step-by-Step Solution</h3>
 
-<p><b>Step 1</b></p>
+<b>Step 1</b>
 
 <p>
-
-${lowerSquare*lowerSquare}
-&lt;
-${targetNumber}
-&lt;
-${upperSquare*upperSquare}
-
+Find nearby perfect squares:
 </p>
 
-<p><b>Step 2</b></p>
-
 <p>
-
-√${lowerSquare*lowerSquare}
-=
 ${lowerSquare}
+<
+${target}
+<
+${upperSquare}
+</p>
 
+<b>Step 2</b>
+
+<p>
+√${lowerSquare}
+=
+${lowerRoot}
 </p>
 
 <p>
-
-√${upperSquare*upperSquare}
+√${upperSquare}
 =
-${upperSquare}
-
+${upperRoot}
 </p>
 
-<p><b>Step 3</b></p>
+<b>Step 3</b>
+
+<p>
+Place the number on a number line.
+</p>
 
 <div class="numberline">
 
-${lowerSquare}
+${lowerRoot}
 ${line}
-${upperSquare}
+${upperRoot}
 
 </div>
 
-<p><b>Step 4</b></p>
+<b>Step 4</b>
 
 <p>
-
-${targetNumber} is between
-${lowerSquare*lowerSquare}
+The answer must be between
+${lowerRoot}
 and
-${upperSquare*upperSquare}
-
+${upperRoot}.
 </p>
 
-<p><b>Step 5</b></p>
+<b>Step 5</b>
 
 <p>
+Calculator estimate:
+</p>
 
-√${targetNumber}
+<p>
+√${target}
 ≈
-${correctAnswer.toFixed(2)}
-
+${root.toFixed(3)}
 </p>
 
-<p><b>Step 6</b></p>
+<b>Step 6</b>
 
 <p>
-
 Nearest tenth:
-
-<b>${(Math.round(correctAnswer*10)/10).toFixed(1)}</b>
-
 </p>
 
+<h2>
+${(Math.round(root*10)/10).toFixed(1)}
+</h2>
 `;
 
-document.getElementById("feedback").innerHTML=
-solution;
 }
 
 function nextQuestion(){
 
-if(!practiceMode){
+if(!practice){
 
 currentQuestion++;
 
 if(currentQuestion>totalQuestions){
 
 document.getElementById("feedback").innerHTML=
+`
+<h2>🏆 Game Complete!</h2>
 
-`<h2>🏆 Game Complete!</h2>
-<p>Final Score: ${score}</p>`;
+<h3>Final Score: ${score}</h3>
+
+<p>
+You answered
+${totalQuestions}
+questions.
+</p>
+`;
 
 return;
+
 }
 
 }
 
 generateQuestion();
+
 }
 
 </script>
